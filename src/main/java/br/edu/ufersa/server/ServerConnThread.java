@@ -2,36 +2,33 @@ package br.edu.ufersa.server;
 
 import br.edu.ufersa.protocol.MessageStructure;
 import br.edu.ufersa.server.topology.CustomTopology;
-import br.edu.ufersa.server.topology.RingStructure;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.Socket;
-import java.util.Scanner;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 public class ServerConnThread<T extends CustomTopology> implements Runnable {
     private final Logger logger = Logger.getLogger(this.getClass().toString());
-    private final UUID id = UUID.randomUUID();
+    private final Integer id;
     private final Socket client;
     private final T neighborhood;
     private boolean isConnected;
-    private ObjectInputStream in;
 
     public ServerConnThread(Socket client, T clients) {
         this.client = client;
+        this.id = client.getLocalPort();
         this.isConnected = true;
         this.neighborhood = clients;
     }
 
     @Override
     public void run() {
-        logger.info("Creating thread to handle " + client.getInetAddress());
+        logger.info("Creating thread to handle " + client.getLocalPort());
 
         try {
-            in = new ObjectInputStream(client.getInputStream());
+            ObjectInputStream in = new ObjectInputStream(client.getInputStream());
 
             while (isConnected) {
 
@@ -39,14 +36,26 @@ public class ServerConnThread<T extends CustomTopology> implements Runnable {
 
                 if (messageStructure.body().equalsIgnoreCase("end") || messageStructure.body().equalsIgnoreCase("fim"))
                     isConnected = false;
+                else if (!messageStructure.receiverId().equals(String.valueOf(id))) {
+                    logger.info("sending to next node");
+                    MessageStructure message = new MessageStructure(
+                            messageStructure.isBroadcast(),
+                            messageStructure.receiverId(),
+                            messageStructure.direction(),
+                            this.id.toString(),
+                            messageStructure.body()
+                    );
+                    neighborhood.sendMessage(message);
+                }
                 else {
                     MessageStructure message = new MessageStructure(
                             messageStructure.isBroadcast(),
                             messageStructure.receiverId(),
+                            messageStructure.direction(),
                             this.id.toString(),
                             messageStructure.body()
                     );
-                    neighborhood.sendBroadcast(message);
+                    neighborhood.sendMessage(message);
                     System.out.println(message);
                 }
             }

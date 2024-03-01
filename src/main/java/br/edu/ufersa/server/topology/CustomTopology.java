@@ -1,6 +1,5 @@
 package br.edu.ufersa.server.topology;
 
-import br.edu.ufersa.protocol.MessageStructure;
 import br.edu.ufersa.server.exceptions.NodeFullException;
 
 import java.io.Serializable;
@@ -12,5 +11,6 @@ public abstract class CustomTopology {
     }
 
     public abstract void checkAndRegisterClient(Socket client) throws NodeFullException;
-    public abstract void sendBroadcast(Serializable message);
+    public abstract void sendMessage(Serializable message);
+//    public abstract void getNodes();
 }

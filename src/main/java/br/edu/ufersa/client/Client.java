@@ -3,18 +3,17 @@ package br.edu.ufersa.client;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.UUID;
 import java.util.logging.Logger;
 
-public class Client {
+public class Client implements Runnable {
     private final Logger logger = Logger.getLogger(this.getClass().toString());
-    private final String id;
+    private final Integer id;
     private String ip;
     private Integer port;
 
 
-    private void run() {
+    @Override
+    public void run() {
         try {
             logger.info("Starting client...");
 
@@ -24,30 +23,30 @@ public class Client {
             logger.info(
                     "Client connected to "
                             + inet.getHostAddress()
-                            + "with id " + this.id
+                            + " with id " + this.id
             );
 
             ClientConnThread client = new ClientConnThread(socket);
+            new Thread(client).start();
 
-            Thread clientThread = new Thread(client);
-            clientThread.start();
+            ClientOutput output = new ClientOutput(socket);
+            Thread out = new Thread(output);
+            out.setDaemon(true);
+            out.start();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public Client(String host, Integer port) {
-        this.id = UUID.randomUUID().toString();
+        this.id = port;
         this.ip = host;
         this.port = port;
         this.run();
     }
 
-    public Client() {
-        this.id = UUID.randomUUID().toString();
-    }
-
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 

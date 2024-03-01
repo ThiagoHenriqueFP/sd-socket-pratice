@@ -1,8 +1,10 @@
 package br.edu.ufersa.server;
 
+import br.edu.ufersa.client.Client;
+import br.edu.ufersa.client.ClientConnThread;
+import br.edu.ufersa.protocol.PortMapping;
 import br.edu.ufersa.server.exceptions.NodeFullException;
 import br.edu.ufersa.server.topology.CustomTopology;
-import br.edu.ufersa.server.topology.RingStructure;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -14,14 +16,9 @@ public class ServerInstance<T extends CustomTopology> {
     private final Logger logger = Logger.getLogger(this.getClass().toString());
     private final Integer port;
     public T clients;
-    public ServerInstance<T> instance = this;
 
-    public ServerInstance<T> getInstance(){
-        return instance;
-    }
-
-    public ServerInstance(Integer port, Class<T> clients) {
-        this.port = port;
+    public ServerInstance(PortMapping port, Class<T> clients) {
+        this.port = port.getPort();
         try {
             this.clients = clients.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -44,6 +41,10 @@ public class ServerInstance<T extends CustomTopology> {
             );
 
             logger.info("Server ready to be connected");
+
+            logger.info("launching clients");
+
+            new Thread(new ServerClientThread(port, logger)).start();
 
             while (true) {
                 Socket client = server.accept();
