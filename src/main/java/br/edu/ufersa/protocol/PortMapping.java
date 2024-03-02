@@ -1,4 +1,4 @@
-package br.edu.ufersa.ring.protocol;
+package br.edu.ufersa.protocol;
 
 public enum PortMapping {
     P1(8080),
