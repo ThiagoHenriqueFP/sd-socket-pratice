@@ -1,6 +1,7 @@
 package br.edu.ufersa.ring.server;
 
 import br.edu.ufersa.ring.protocol.MessageStructure;
+import br.edu.ufersa.ring.protocol.PortMapping;
 import br.edu.ufersa.ring.server.topology.RingStructure;
 
 import java.io.IOException;
@@ -32,14 +33,17 @@ public class ServerConnThread implements Runnable {
             while (isConnected) {
 
                 MessageStructure messageStructure = (MessageStructure) in.readObject();
+                String previousPort = String.valueOf(PortMapping.getPreviousPort(messageStructure.senderId()));
 
-                if (messageStructure.body().equalsIgnoreCase("end") || messageStructure.body().equalsIgnoreCase("fim"))
+                if (messageStructure.body().equalsIgnoreCase("end") || messageStructure.body().equalsIgnoreCase("fim")) {
                     isConnected = false;
-                else if (!messageStructure.receiverId().equals(String.valueOf(id))) {
+                } else if (messageStructure.isBroadcast() && !previousPort.equals(this.id.toString())) {
+                    System.out.println(messageStructure);
+                    neighborhood.sendMessage(messageStructure);
+                } else if (!messageStructure.receiverId().equals(String.valueOf(id)) && !messageStructure.receiverId().isBlank()) {
                     logger.info("sending to next node");
                     neighborhood.sendMessage(messageStructure);
-                }
-                else {
+                } else {
                     System.out.println(messageStructure);
                 }
             }
