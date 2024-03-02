@@ -1,18 +1,20 @@
 package br.edu.ufersa.client;
 
+import br.edu.ufersa.server.topology.CustomTopology;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.logging.Logger;
 
-public class Client implements Runnable {
+public class Client <T extends CustomTopology> {
     private final Logger logger = Logger.getLogger(this.getClass().toString());
     private final Integer id;
-    private String ip;
-    private Integer port;
+    private final String ip;
+    private final Integer port;
+    private T clients;
 
 
-    @Override
     public void run() {
         try {
             logger.info("Starting client...");
@@ -26,43 +28,24 @@ public class Client implements Runnable {
                             + " with id " + this.id
             );
 
-            ClientConnThread client = new ClientConnThread(socket);
+            ClientConnThread client = new ClientConnThread(socket, this.clients);
             new Thread(client).start();
 
-            ClientOutput output = new ClientOutput(socket);
-            Thread out = new Thread(output);
-            out.setDaemon(true);
-            out.start();
+//            ClientOutput output = new ClientOutput(socket);
+//            Thread out = new Thread(output);
+//            out.setDaemon(true);
+//            out.start();
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Client(String host, Integer port) {
+    public Client(String host, Integer port, T clients) {
         this.id = port;
         this.ip = host;
         this.port = port;
+        this.clients = clients;
         this.run();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
     }
 }

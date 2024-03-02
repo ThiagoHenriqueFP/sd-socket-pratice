@@ -1,5 +1,6 @@
 package br.edu.ufersa.server.topology;
 
+import br.edu.ufersa.client.ClientConnThread;
 import br.edu.ufersa.server.exceptions.NodeFullException;
 
 import java.io.IOException;
@@ -21,13 +22,14 @@ public class RingStructure extends CustomTopology {
         else throw new NodeFullException("This node is Full!");
     }
 
+    @Override
     public void sendToNode(Socket node, Serializable message) {
-        ObjectOutputStream out;
         try {
+            ObjectOutputStream out = ClientConnThread.out;
 
-            out = new ObjectOutputStream(node.getOutputStream());
+            out.reset();
             out.writeObject(message);
-//            out.close();
+            out.flush();
 
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -6,7 +6,6 @@ import br.edu.ufersa.server.topology.CustomTopology;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 public class ServerConnThread<T extends CustomTopology> implements Runnable {
@@ -38,25 +37,10 @@ public class ServerConnThread<T extends CustomTopology> implements Runnable {
                     isConnected = false;
                 else if (!messageStructure.receiverId().equals(String.valueOf(id))) {
                     logger.info("sending to next node");
-                    MessageStructure message = new MessageStructure(
-                            messageStructure.isBroadcast(),
-                            messageStructure.receiverId(),
-                            messageStructure.direction(),
-                            this.id.toString(),
-                            messageStructure.body()
-                    );
-                    neighborhood.sendMessage(message);
+                    neighborhood.sendMessage(messageStructure);
                 }
                 else {
-                    MessageStructure message = new MessageStructure(
-                            messageStructure.isBroadcast(),
-                            messageStructure.receiverId(),
-                            messageStructure.direction(),
-                            this.id.toString(),
-                            messageStructure.body()
-                    );
-                    neighborhood.sendMessage(message);
-                    System.out.println(message);
+                    System.out.println(messageStructure);
                 }
             }
 

@@ -1,9 +1,6 @@
 package br.edu.ufersa.server;
 
-import br.edu.ufersa.client.Client;
-import br.edu.ufersa.client.ClientConnThread;
 import br.edu.ufersa.protocol.PortMapping;
-import br.edu.ufersa.server.exceptions.NodeFullException;
 import br.edu.ufersa.server.topology.CustomTopology;
 
 import java.io.IOException;
@@ -44,17 +41,11 @@ public class ServerInstance<T extends CustomTopology> {
 
             logger.info("launching clients");
 
-            new Thread(new ServerClientThread(port, logger)).start();
+            new Thread(new ServerClientThread(port, logger, clients)).start();
 
             while (true) {
                 Socket client = server.accept();
                 ServerConnThread<T> serverThread = new ServerConnThread<>(client, clients);
-
-                try {
-                    clients.checkAndRegisterClient(client);
-                } catch (NodeFullException e) {
-                    logger.severe("NodeFullException: " + e.getMessage());
-                }
 
                 Thread thread = new Thread(serverThread);
                 thread.start();

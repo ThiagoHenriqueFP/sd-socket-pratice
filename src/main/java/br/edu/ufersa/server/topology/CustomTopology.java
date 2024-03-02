@@ -12,5 +12,6 @@ public abstract class CustomTopology {
 
     public abstract void checkAndRegisterClient(Socket client) throws NodeFullException;
     public abstract void sendMessage(Serializable message);
+    public abstract void sendToNode(Socket client, Serializable message);
 //    public abstract void getNodes();
 }

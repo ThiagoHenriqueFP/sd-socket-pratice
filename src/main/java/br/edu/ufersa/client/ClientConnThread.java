@@ -1,17 +1,16 @@
 package br.edu.ufersa.client;
 
 import br.edu.ufersa.protocol.MessageStructure;
+import br.edu.ufersa.server.topology.CustomTopology;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Scanner;
-import java.util.UUID;
 import java.util.logging.Logger;
 
-public class ClientConnThread implements Runnable {
+public class ClientConnThread <T extends CustomTopology> implements Runnable {
+    public static ObjectOutputStream out;
     private final Logger logger = Logger.getLogger(this.getClass().toString());
     private final Integer id;
     private final Socket client;
@@ -19,11 +18,12 @@ public class ClientConnThread implements Runnable {
     private final Scanner scanner;
 
 
-    public ClientConnThread(Socket socket) {
+    public ClientConnThread(Socket socket, T clients) {
         this.client = socket;
         this.id = socket.getPort();
         this.isConnected = true;
         this.scanner = new Scanner(System.in);
+        clients.checkAndRegisterClient(socket);
     }
 
 
@@ -32,7 +32,7 @@ public class ClientConnThread implements Runnable {
         try {
             logger.info("Client initializing");
 
-            ObjectOutputStream out = new ObjectOutputStream(client.getOutputStream());
+            out = new ObjectOutputStream(client.getOutputStream());
             String body, receiverId, direction;
 
             while(isConnected) {
@@ -61,6 +61,7 @@ public class ClientConnThread implements Runnable {
                     // todo remove from server
                 }
                 else out.writeObject(message);
+                out.reset();
             }
 
             out.close();
