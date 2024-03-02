@@ -1,18 +1,18 @@
-package br.edu.ufersa.client;
+package br.edu.ufersa.ring.client;
 
-import br.edu.ufersa.server.topology.CustomTopology;
+import br.edu.ufersa.ring.server.topology.RingStructure;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.logging.Logger;
 
-public class Client <T extends CustomTopology> {
+public class Client {
     private final Logger logger = Logger.getLogger(this.getClass().toString());
     private final Integer id;
     private final String ip;
     private final Integer port;
-    private T clients;
+    private final RingStructure clients;
 
 
     public void run() {
@@ -41,7 +41,7 @@ public class Client <T extends CustomTopology> {
         }
     }
 
-    public Client(String host, Integer port, T clients) {
+    public Client(String host, Integer port, RingStructure clients) {
         this.id = port;
         this.ip = host;
         this.port = port;

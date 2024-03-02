@@ -1,17 +1,17 @@
-package br.edu.ufersa.server;
+package br.edu.ufersa.ring.server;
 
-import br.edu.ufersa.client.Client;
-import br.edu.ufersa.server.topology.CustomTopology;
+import br.edu.ufersa.ring.client.Client;
+import br.edu.ufersa.ring.server.topology.RingStructure;
 
 import java.util.logging.Logger;
 
-public class ServerClientThread <T extends CustomTopology> implements Runnable {
+public class ServerClientThread implements Runnable {
 
     private final Integer port;
     private final Logger logger;
-    private final T clients;
+    private final RingStructure clients;
 
-    public ServerClientThread(Integer port, Logger logger, T clients) {
+    public ServerClientThread(Integer port, Logger logger, RingStructure clients) {
         this.port = port;
         this.logger = logger;
         this.clients = clients;

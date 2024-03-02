@@ -1,7 +1,7 @@
-package br.edu.ufersa.server.topology;
+package br.edu.ufersa.ring.server.topology;
 
-import br.edu.ufersa.client.ClientConnThread;
-import br.edu.ufersa.server.exceptions.NodeFullException;
+import br.edu.ufersa.ring.client.ClientConnThread;
+import br.edu.ufersa.ring.server.exceptions.NodeFullException;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;

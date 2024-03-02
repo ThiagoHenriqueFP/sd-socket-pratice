@@ -1,4 +1,4 @@
-package br.edu.ufersa.protocol;
+package br.edu.ufersa.ring.protocol;
 
 import java.io.Serializable;
 

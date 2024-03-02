@@ -1,7 +1,7 @@
-package br.edu.ufersa.client;
+package br.edu.ufersa.ring.client;
 
-import br.edu.ufersa.protocol.MessageStructure;
-import br.edu.ufersa.server.topology.CustomTopology;
+import br.edu.ufersa.ring.protocol.MessageStructure;
+import br.edu.ufersa.ring.server.topology.RingStructure;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
-public class ClientConnThread <T extends CustomTopology> implements Runnable {
+public class ClientConnThread implements Runnable {
     public static ObjectOutputStream out;
     private final Logger logger = Logger.getLogger(this.getClass().toString());
     private final Integer id;
@@ -18,7 +18,7 @@ public class ClientConnThread <T extends CustomTopology> implements Runnable {
     private final Scanner scanner;
 
 
-    public ClientConnThread(Socket socket, T clients) {
+    public ClientConnThread(Socket socket, RingStructure clients) {
         this.client = socket;
         this.id = socket.getPort();
         this.isConnected = true;

@@ -1,4 +1,4 @@
-package br.edu.ufersa.server.exceptions;
+package br.edu.ufersa.ring.server.exceptions;
 
 public class NodeFullException extends RuntimeException {
     public NodeFullException(String message) {
