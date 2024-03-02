@@ -8,21 +8,19 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 
-public class RingStructure extends CustomTopology {
+public class RingStructure {
     private Socket client;
 
     public RingStructure() {
         super();
     }
 
-    @Override
     public void checkAndRegisterClient(Socket client) {
         if (this.client == null || client.isClosed())
             this.client = client;
         else throw new NodeFullException("This node is Full!");
     }
 
-    @Override
     public void sendToNode(Socket node, Serializable message) {
         try {
             ObjectOutputStream out = ClientConnThread.out;
@@ -36,16 +34,7 @@ public class RingStructure extends CustomTopology {
         }
     }
 
-    @Override
     public void sendMessage(Serializable message) {
         if (client != null && !client.isClosed()) sendToNode(client, message);
     }
-
-//    @Override
-//    public void getNodes() {
-//        ObjectOutputStream out;
-//        try {
-//
-//        }
-//    }
 }

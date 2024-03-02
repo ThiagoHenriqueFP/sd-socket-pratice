@@ -6,6 +6,6 @@ import br.edu.ufersa.ring.server.topology.RingStructure;
 
 public class s3 {
     public static void main(String[] args) {
-        new ServerInstance<>(PortMapping.P3, RingStructure.class);
+        new ServerInstance(PortMapping.P3);
     }
 }

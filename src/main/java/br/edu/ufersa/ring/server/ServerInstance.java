@@ -1,7 +1,7 @@
 package br.edu.ufersa.ring.server;
 
 import br.edu.ufersa.ring.protocol.PortMapping;
-import br.edu.ufersa.server.topology.CustomTopology;
+import br.edu.ufersa.ring.server.topology.RingStructure;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -9,19 +9,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Logger;
 
-public class ServerInstance<T extends CustomTopology> {
+public class ServerInstance {
     private final Logger logger = Logger.getLogger(this.getClass().toString());
     private final Integer port;
-    public T clients;
+    public RingStructure clients = new RingStructure();
 
-    public ServerInstance(PortMapping port, Class<T> clients) {
+    public ServerInstance(PortMapping port) {
         this.port = port.getPort();
-        try {
-            this.clients = clients.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            logger.severe("Error to construct new ServerInstance: " + e.getMessage());
-            throw new RuntimeException(e);
-        }
         this.startServer();
     }
 
@@ -45,7 +39,7 @@ public class ServerInstance<T extends CustomTopology> {
 
             while (true) {
                 Socket client = server.accept();
-                ServerConnThread<T> serverThread = new ServerConnThread<>(client, clients);
+                ServerConnThread serverThread = new ServerConnThread(client, clients);
 
                 Thread thread = new Thread(serverThread);
                 thread.start();
