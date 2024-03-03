@@ -1,7 +1,7 @@
 package br.edu.ufersa.ring.server;
 
-import br.edu.ufersa.ring.protocol.MessageStructure;
-import br.edu.ufersa.ring.protocol.PortMapping;
+import br.edu.ufersa.protocol.MessageStructure;
+import br.edu.ufersa.protocol.PortMapping;
 import br.edu.ufersa.ring.server.topology.RingStructure;
 
 import java.io.IOException;

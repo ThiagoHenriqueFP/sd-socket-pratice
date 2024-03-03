@@ -1,6 +1,6 @@
 package br.edu.ufersa.ring.client;
 
-import br.edu.ufersa.ring.protocol.MessageStructure;
+import br.edu.ufersa.protocol.MessageStructure;
 import br.edu.ufersa.ring.server.topology.RingStructure;
 
 import java.io.IOException;

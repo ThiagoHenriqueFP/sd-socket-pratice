@@ -1,10 +1,9 @@
 package br.edu.ufersa.ring.server;
 
-import br.edu.ufersa.ring.protocol.PortMapping;
+import br.edu.ufersa.protocol.PortMapping;
 import br.edu.ufersa.ring.server.topology.RingStructure;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Logger;

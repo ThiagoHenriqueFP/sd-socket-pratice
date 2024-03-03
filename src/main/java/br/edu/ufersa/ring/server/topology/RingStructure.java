@@ -11,9 +11,7 @@ import java.net.Socket;
 public class RingStructure {
     private Socket client;
 
-    public RingStructure() {
-        super();
-    }
+    public RingStructure() {}
 
     public void checkAndRegisterClient(Socket client) {
         if (this.client == null || client.isClosed())
