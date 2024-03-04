@@ -31,11 +31,6 @@ public class Client {
             ClientConnThread client = new ClientConnThread(socket, this.clients);
             new Thread(client).start();
 
-//            ClientOutput output = new ClientOutput(socket);
-//            Thread out = new Thread(output);
-//            out.setDaemon(true);
-//            out.start();
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
