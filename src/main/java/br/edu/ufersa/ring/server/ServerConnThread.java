@@ -38,13 +38,16 @@ public class ServerConnThread implements Runnable {
                 if (messageStructure.body().equalsIgnoreCase("end") || messageStructure.body().equalsIgnoreCase("fim")) {
                     isConnected = false;
                 } else if (messageStructure.isBroadcast() && !previousPort.equals(this.id.toString())) {
-                    System.out.println(messageStructure);
+                    System.out.println("--- broadcast message ---\n" + messageStructure.body());
                     neighborhood.sendMessage(messageStructure);
                 } else if (!messageStructure.receiverId().equals(String.valueOf(id)) && !messageStructure.receiverId().isBlank()) {
                     logger.info("sending to next node");
                     neighborhood.sendMessage(messageStructure);
                 } else {
-                    System.out.println(messageStructure);
+                    System.out.println(
+                            "Message from " + messageStructure.senderId()
+                                    + "\n->" + messageStructure.body()
+                    );
                 }
             }
 
