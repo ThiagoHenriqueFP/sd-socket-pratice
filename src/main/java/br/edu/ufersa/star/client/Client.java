@@ -1,11 +1,6 @@
 package br.edu.ufersa.star.client;
 
-import br.edu.ufersa.star.server.ServerConnThread;
-import br.edu.ufersa.star.server.ServerInstance;
-import br.edu.ufersa.star.server.topology.StarStructure;
-
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.logging.Logger;
@@ -14,7 +9,6 @@ public class Client {
     private final Logger logger = Logger.getLogger(this.getClass().toString());
     private final String ip;
     private final Integer port;
-    private final StarStructure clients = ServerInstance.clients;
 
 
     public void run() {
@@ -31,11 +25,8 @@ public class Client {
                             + " with id " + id
             );
 
-            ClientConnThread client = new ClientConnThread(socket, this.clients);
+            ClientConnThread client = new ClientConnThread(socket);
             new Thread(client).start();
-
-//            new Thread(new ClientInputThread(socket)).start();
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

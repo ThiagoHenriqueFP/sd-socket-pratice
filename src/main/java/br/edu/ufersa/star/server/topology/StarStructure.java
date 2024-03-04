@@ -1,7 +1,6 @@
 package br.edu.ufersa.star.server.topology;
 
 import br.edu.ufersa.protocol.MessageStructure;
-import br.edu.ufersa.star.client.ClientConnThread;
 import br.edu.ufersa.star.server.exceptions.NodeNotAccessibleException;
 
 import java.io.IOException;
@@ -13,20 +12,22 @@ import java.util.logging.Logger;
 
 public class StarStructure {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-    private final HashMap<Integer, Socket> clients = new HashMap<>();
-    private final ObjectOutputStream out = ClientConnThread.out;
+    public final static HashMap<Integer, Socket> clients = new HashMap<>();
+    public final static HashMap<Integer, ObjectOutputStream> outputStreams = new HashMap<>();
+    private ObjectOutputStream out;
 
-    public void checkAndRegisterClient(Socket node) {
+    public void checkAndRegisterClient(Socket node) throws IOException {
         Integer port = node.getPort();
 
         Socket alreadyConnected = clients.get(port);
 
         logger.info("trying to register client");
 
-        if (alreadyConnected == null || alreadyConnected.isClosed())
+        if (alreadyConnected == null || alreadyConnected.isClosed()){
             clients.put(port, node);
-        else
-            logger.info("socket already connected");
+            outputStreams.put(port, new ObjectOutputStream(node.getOutputStream()));
+        }
+        else logger.info("socket already connected");
 
         logger.info("client connected with port: " + port);
     }
@@ -38,6 +39,8 @@ public class StarStructure {
             if (node == null || node.isClosed())
                 throw new NodeNotAccessibleException();
 
+            out = outputStreams.get(port);
+
             sendMessage(message);
         } catch (RuntimeException e) {
             logger.severe(e.getClass().getName() + ": " + e.getMessage());
@@ -46,26 +49,46 @@ public class StarStructure {
         }
     }
 
-    public void sendBroadCast(Serializable message) {
+    public void sendBroadCast(Integer sender, Serializable message) {
         clients.keySet().forEach(
-                it -> this.sendMessage(it, message)
+                it -> {
+                    if(!sender.equals(it)){
+                        this.sendMessage(it, message);
+                        logger.info("sending to: " + it);
+                    }
+                }
         );
     }
 
+    private boolean checkClient(Integer port) {
+        Socket client = clients.get(port);
+        if (client.isClosed()) {
+            clients.remove(port);
+            return false;
+        }
+        return true;
+    }
+
     public void getClientsList(Integer port) {
-            StringBuilder list = new StringBuilder();
-            clients.keySet().forEach(
-                    it -> list.append("port: ").append(it).append("\n")
-            );
+        StringBuilder list = new StringBuilder();
+        list.append("listClients:\n");
+        clients.keySet().forEach(
+                it -> {
+                    if (checkClient(it) && !it.equals(port))
+                        list.append(" port: ").append(it).append(" | ");
 
-            MessageStructure message = new MessageStructure(
-              false,
-              port.toString(),
-              "",
-              list.toString()
-            );
+                    list.deleteCharAt(list.length() - 1);
+                }
+        );
 
-            this.sendMessage(message);
+        MessageStructure message = new MessageStructure(
+                false,
+                port.toString(),
+                "8080",
+                list.toString()
+        );
+
+        this.sendMessage(port, message);
     }
 
     private void sendMessage(Serializable message) {

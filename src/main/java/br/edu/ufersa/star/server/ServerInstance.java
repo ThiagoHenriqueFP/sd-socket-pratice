@@ -34,7 +34,8 @@ public class ServerInstance {
 
             while (true) {
                 Socket client = server.accept();
-                ServerConnThread serverThread = new ServerConnThread(client, clients);
+                clients.checkAndRegisterClient(client);
+                ServerConnThread serverThread = new ServerConnThread(client);
 
                 Thread thread = new Thread(serverThread);
                 thread.start();

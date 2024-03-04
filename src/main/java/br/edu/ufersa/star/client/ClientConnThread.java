@@ -1,12 +1,8 @@
 package br.edu.ufersa.star.client;
 
 import br.edu.ufersa.protocol.MessageStructure;
-import br.edu.ufersa.ring.server.topology.RingStructure;
-import br.edu.ufersa.star.server.topology.StarStructure;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
@@ -14,7 +10,6 @@ import java.util.logging.Logger;
 
 public class ClientConnThread implements Runnable {
     public static ObjectOutputStream out;
-    public static ObjectInputStream in;
     private final Logger logger = Logger.getLogger(this.getClass().toString());
     private final Integer id;
     private final Socket client;
@@ -22,22 +17,21 @@ public class ClientConnThread implements Runnable {
     private final Scanner scanner;
 
 
-    public ClientConnThread(Socket socket, StarStructure clients) {
+    public ClientConnThread(Socket socket) {
         this.client = socket;
-        this.id = socket.getPort();
+        this.id = socket.getLocalPort();
         this.isConnected = true;
         this.scanner = new Scanner(System.in);
-        clients.checkAndRegisterClient(socket);
     }
 
 
     @Override
     public void run() {
         try {
+            out = new ObjectOutputStream(client.getOutputStream());
+
             logger.info("Client initializing");
 
-            out = new ObjectOutputStream(client.getOutputStream());
-            in = new ObjectInputStream(client.getInputStream());
             new Thread(new ClientInputThread(client)).start();
             String body, receiverId;
 
@@ -45,7 +39,14 @@ public class ClientConnThread implements Runnable {
                 System.out.println("send a message");
                 body = scanner.nextLine();
 
-                System.out.println("which client must receive? [8080, 8081, 8082, 8083, all]");
+                System.out.println("which client must receive?");
+                MessageStructure getClients = new MessageStructure(
+                        false,
+                        "none",
+                        this.id.toString(),
+                        "getClients"
+                );
+                out.writeObject(getClients);
                 receiverId = scanner.nextLine();
 
                 MessageStructure message = new MessageStructure(
